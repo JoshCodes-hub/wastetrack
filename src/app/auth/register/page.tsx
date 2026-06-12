@@ -13,13 +13,17 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    const { data: { session }, error: authErr } = await supabase.auth.signUp({ email, password })
-    if (authErr || !session) { setError(authErr?.message || 'Registration failed'); return }
-    const { error: insertErr } = await supabase.from('users').insert({
-      id: session.user.id, email, name, role: 'reporter',
-    })
-    if (insertErr) { setError(insertErr.message); return }
-    router.push('/dashboard/reporter')
+    try {
+      const { data: { session }, error: authErr } = await supabase.auth.signUp({ email, password })
+      if (authErr || !session) { setError(authErr?.message || 'Registration failed'); return }
+      const { error: insertErr } = await supabase.from('users').insert({
+        id: session.user.id, email, name, role: 'reporter',
+      })
+      if (insertErr) { setError(insertErr.message); return }
+      router.push('/dashboard/reporter')
+    } catch (err: any) {
+      setError(err?.message || 'Connection error. Check console (F12).')
+    }
   }
 
   return (

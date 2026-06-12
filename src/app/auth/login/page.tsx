@@ -12,10 +12,14 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    const { data: { session }, error: authErr } = await supabase.auth.signInWithPassword({ email, password })
-    if (authErr || !session) { setError(authErr?.message || 'Login failed'); return }
-    const { data } = await supabase.from('users').select('role').eq('id', session.user.id).single()
-    router.push(`/dashboard/${data?.role || 'reporter'}`)
+    try {
+      const { data: { session }, error: authErr } = await supabase.auth.signInWithPassword({ email, password })
+      if (authErr || !session) { setError(authErr?.message || 'Login failed'); return }
+      const { data } = await supabase.from('users').select('role').eq('id', session.user.id).single()
+      router.push(`/dashboard/${data?.role || 'reporter'}`)
+    } catch (err: any) {
+      setError(err?.message || 'Connection error. Check console (F12).')
+    }
   }
 
   return (
