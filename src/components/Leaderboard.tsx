@@ -2,14 +2,12 @@
 import { useEffect, useState } from 'react'
 import supabase from '@/lib/supabase'
 
-interface LeaderboardEntry {
-  user_id: string
-  name: string
-  count: number
+interface Entry {
+  user_id: string; name: string; count: number
 }
 
 export default function Leaderboard() {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([])
+  const [entries, setEntries] = useState<Entry[]>([])
 
   useEffect(() => {
     supabase.from('reports').select('user_id').then(({ data }) => {
@@ -24,26 +22,33 @@ export default function Leaderboard() {
         users.forEach(u => { nameMap[u.id] = u.name })
         const sorted = Object.entries(counts)
           .map(([user_id, count]) => ({ user_id, name: nameMap[user_id] || 'Unknown', count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 10)
+          .sort((a, b) => b.count - a.count).slice(0, 10)
         setEntries(sorted)
       })
     })
   }, [])
 
-  const medal = (i: number) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : ''
+  const medals = ['🥇', '🥈', '🥉']
 
   return (
-    <div className="p-4 rounded-xl" style={{ background: 'var(--card)', border: '1px solid var(--card-border)' }}>
-      <h2 className="text-lg font-bold mb-3">Leaderboard 🏆</h2>
+    <div className="card p-6">
+      <div className="flex items-center gap-3 mb-5">
+        <span className="text-2xl">🏆</span>
+        <h2 className="text-lg font-bold gradient-text">Top Reporters</h2>
+      </div>
       {entries.length === 0 ? (
-        <p className="text-sm" style={{ color: 'var(--muted)' }}>No reports yet</p>
+        <p className="text-sm text-gray-400 text-center py-6">No reports yet — be the first!</p>
       ) : (
         <div className="space-y-2">
           {entries.map((e, i) => (
-            <div key={e.user_id} className="flex items-center justify-between p-2 rounded-lg" style={{ background: 'var(--background)' }}>
-              <span className="font-mono">{medal(i)} {e.name}</span>
-              <span className="font-bold text-sm" style={{ color: 'var(--primary)' }}>{e.count} reports</span>
+            <div key={e.user_id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 animate-fade-up" style={{ animationDelay: `${i * 80}ms` }}>
+              <div className="flex items-center gap-3">
+                <span className="text-lg w-8 text-center">{medals[i] || `#${i + 1}`}</span>
+                <span className="font-medium text-sm">{e.name}</span>
+              </div>
+              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 rounded-lg">
+                {e.count} {e.count === 1 ? 'report' : 'reports'}
+              </span>
             </div>
           ))}
         </div>

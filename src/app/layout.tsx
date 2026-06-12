@@ -8,11 +8,11 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WasteTrack AI",
-  description: "Smart Waste Management System",
+  title: "WasteTrack AI — Smart Waste Management",
+  description: "AI-powered waste management system with real-time IoT monitoring",
 };
 
-export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
@@ -20,7 +20,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
           __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.add('dark')}catch(e){}})()`
         }} />
       </head>
-      <body className="min-h-full flex flex-col" style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
+      <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <Navbar />
           <main className="flex-1">{children}</main>
